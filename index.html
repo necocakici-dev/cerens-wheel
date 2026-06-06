@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>Situationship Wheel</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Fredoka", sans-serif;
+      }
+
+      body {
+        height: 100vh;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at top left, #ff5fa2 0%, transparent 30%),
+          radial-gradient(circle at bottom right, #ffd84d 0%, transparent 30%),
+          linear-gradient(135deg, #5f27cd, #ff6ec7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 700px;
+        text-align: center;
+        padding: 30px;
+      }
+
+      h1 {
+        font-size: 48px;
+        margin-bottom: 10px;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+        line-height: 1.15;
+      }
+
+      .subtitle {
+        opacity: 0.8;
+        margin-bottom: 35px;
+        font-size: 18px;
+      }
+
+      .options {
+        display: grid;
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .option {
+        padding: 18px;
+        border-radius: 22px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        cursor: pointer;
+        transition: 0.25s ease;
+        font-size: 20px;
+        font-weight: 600;
+        user-select: none;
+      }
+
+      .option:hover {
+        transform: scale(1.02);
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .option.selected {
+        border-color: #ffd84d;
+        box-shadow:
+          0 0 12px #ffd84d,
+          0 0 30px rgba(255, 216, 77, 0.7);
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      button {
+        border: none;
+        padding: 16px 32px;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+        transition: 0.25s ease;
+      }
+
+      #findOutBtn {
+        background: #ffd84d;
+        color: #5f27cd;
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      #findOutBtn.active {
+        opacity: 1;
+        pointer-events: auto;
+        box-shadow: 0 0 20px rgba(255, 216, 77, 0.8);
+      }
+
+      #findOutBtn:hover,
+      #spinBtn:hover,
+      #resetBtn:hover {
+        transform: scale(1.05);
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .wheel-section {
+        animation: fadeIn 0.8s ease;
+      }
+
+      .small {
+        font-size: 14px;
+        opacity: 0.8;
+        margin-bottom: 5px;
+      }
+
+      .big {
+        font-size: 42px;
+        font-weight: bold;
+        margin-bottom: 30px;
+      }
+
+      .wheel-wrapper {
+        position: relative;
+        width: 340px;
+        height: 340px;
+        margin: 0 auto 30px;
+      }
+
+      .pointer {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 18px solid transparent;
+        border-right: 18px solid transparent;
+        border-top: 40px solid white;
+        z-index: 10;
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
+      }
+
+      .wheel {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 10px solid white;
+        position: relative;
+        overflow: hidden;
+        transition: transform 5s cubic-bezier(0.15, 0.9, 0.2, 1);
+        background: conic-gradient(
+          #ff5fa2 0deg 90deg,
+          #ffd84d 90deg 180deg,
+          #ff8ad8 180deg 270deg,
+          #8f5cff 270deg 360deg
+        );
+        box-shadow:
+          0 0 40px rgba(255, 255, 255, 0.25),
+          inset 0 0 30px rgba(255, 255, 255, 0.15);
+      }
+
+      .label {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform-origin: center;
+        font-weight: 700;
+        font-size: 18px;
+        width: 170px;
+        text-align: center;
+        letter-spacing: 1px;
+      }
+      .label span {
+        display: block;
+        transform: translateY(-112px);
+        text-shadow:
+          0 0 10px rgba(0, 0, 0, 0.6),
+          0 0 20px rgba(0, 0, 0, 0.5);
+      }
+
+      #spinBtn {
+        background: white;
+        color: #5f27cd;
+        margin-bottom: 25px;
+      }
+
+      .result {
+        margin-top: 15px;
+        font-size: 28px;
+        font-weight: bold;
+        animation: fadeIn 0.5s ease;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.35);
+      }
+
+      #resetBtn {
+        margin-top: 30px;
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* MOBİLE ÖZEL */
+      @media (max-width: 600px) {
+        h1 {
+          font-size: 34px;
+          padding: 0 10px;
+        }
+        .subtitle {
+          font-size: 16px;
+        }
+        .big {
+          font-size: 30px;
+        }
+        .wheel-wrapper {
+          width: 300px;
+          height: 300px;
+        }
+        .label {
+          font-size: 15px;
+          width: 120px;
+        }
+        .label span {
+          transform: translateY(-96px);
+        }
+        .option {
+          font-size: 17px;
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div id="firstScreen">
+        <h1>💜 Why should you have a situationship with me? 💅</h1>
+        <div class="subtitle">be honest 😉</div>
+
+        <div class="options">
+          <div class="option">😂 Because I am funny</div>
+          <div class="option">✨ Because I look good</div>
+          <div class="option">🍆 Because I have huge D</div>
+          <div class="option">🍳 Because I can cook</div>
+        </div>
+
+        <button id="findOutBtn">💖 Find Out</button>
+      </div>
+
+      <div id="wheelScreen" class="hidden wheel-section">
+        <div class="small">the truth is... 👀</div>
+        <div class="big">🎡 Çevir bakalım</div>
+
+        <div class="wheel-wrapper">
+          <div class="pointer"></div>
+
+          <div class="wheel" id="wheel">
+            <div
+              class="label"
+              style="transform: translate(-50%, -50%) rotate(45deg)"
+            >
+              <span>FUNNY</span>
+            </div>
+
+            <div
+              class="label"
+              style="transform: translate(-50%, -50%) rotate(135deg)"
+            >
+              <span>LOOK GOOD</span>
+            </div>
+
+            <div
+              class="label"
+              style="transform: translate(-50%, -50%) rotate(225deg)"
+            >
+              <span>HUGE D.</span>
+            </div>
+
+            <div
+              class="label"
+              style="transform: translate(-50%, -50%) rotate(315deg)"
+            >
+              <span>COOK</span>
+            </div>
+          </div>
+        </div>
+
+        <button id="spinBtn">🌀 Spin it</button>
+
+        <div class="result hidden" id="resultText">
+          The wheel has spoken: 🍆 HUGE DICK 🍆
+        </div>
+
+        <button id="resetBtn" class="hidden">
+          try again (it won't change 😭)
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const options = document.querySelectorAll(".option");
+      const findOutBtn = document.getElementById("findOutBtn");
+
+      const firstScreen = document.getElementById("firstScreen");
+      const wheelScreen = document.getElementById("wheelScreen");
+
+      const wheel = document.getElementById("wheel");
+      const spinBtn = document.getElementById("spinBtn");
+
+      const resultText = document.getElementById("resultText");
+      const resetBtn = document.getElementById("resetBtn");
+
+      let selected = false;
+
+      options.forEach((option) => {
+        option.addEventListener("click", () => {
+          options.forEach((o) => o.classList.remove("selected"));
+
+          option.classList.add("selected");
+
+          selected = true;
+
+          findOutBtn.classList.add("active");
+        });
+      });
+
+      findOutBtn.addEventListener("click", () => {
+        if (!selected) return;
+
+        firstScreen.classList.add("hidden");
+
+        setTimeout(() => {
+          wheelScreen.classList.remove("hidden");
+        }, 300);
+      });
+
+      spinBtn.addEventListener("click", () => {
+        spinBtn.disabled = true;
+
+        /*
+        Wheel is rigged.
+        Pointer is at top.
+        HUGE D. section centered around 225deg.
+        We force landing there every single time.
+      */
+
+        const finalRotation = 3600 + 135;
+
+        wheel.style.transform = `rotate(${finalRotation}deg)`;
+
+        setTimeout(() => {
+          resultText.classList.remove("hidden");
+          resetBtn.classList.remove("hidden");
+        }, 5200);
+      });
+
+      resetBtn.addEventListener("click", () => {
+        wheel.style.transition = "none";
+        wheel.style.transform = "rotate(0deg)";
+
+        setTimeout(() => {
+          wheel.style.transition =
+            "transform 5s cubic-bezier(0.15, 0.9, 0.2, 1)";
+        }, 50);
+
+        resultText.classList.add("hidden");
+
+        setTimeout(() => {
+          spinBtn.disabled = false;
+        }, 100);
+      });
+    </script>
+  </body>
+</html>
